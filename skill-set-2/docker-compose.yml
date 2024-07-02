@@ -1,0 +1,14 @@
+services:
+
+  demo-app:
+    build:
+      context: ./
+      dockerfile: ./app.dockerfile
+    restart: always
+    ports:
+      - "8080:7123"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      PORT: 7123

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: demo-app
+  name: demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: demo-app
+    spec:
+      containers:
+      - image: dlloihub36/demo-app:0.0.1
+        name: demo-app
+        env:
+          - name: PORT
+            value: "7123"
+        resources: {}
+status: {}
+
