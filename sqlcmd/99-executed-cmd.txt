@@ -1,0 +1,47 @@
+
+##run as admin to install for all users
+PS C:\Users\aibwinuser> Install-Module -Name SqlServer
+
+PS C:\Users\aibwinuser> 
+Invoke-Sqlcmd -Query "SELECT GETDATE() AS TimeOfQuery;" `
+-ServerInstance "myubuntuvm12.local.net,31437" -Username "arcadmin" -Password '1qaz@WSX3edc$RFV'
+
+TimeOfQuery
+-----------
+3/28/2023 10:14:44 AM
+
+PS C:\Users\aibwinuser> 
+Invoke-Sqlcmd -Query "BACKUP DATABASE AdventureWorks2019 `
+TO URL = 'https://filecopyxyz222.blob.core.windows.net/ads-backup/AdventureWorks2019-112233.bak'with COPY_ONLY;" `
+-ServerInstance "myubuntuvm12.local.net,31437" -Username "arcadmin" -Password '1qaz@WSX3edc$RFV'
+PS C:\Users\aibwinuser>
+
+----202300330--
+Install-Module -Name SqlServer
+
+import-Module -Name SqlServer
+
+$pwd = read-host -AsSecureString -Prompt "Password" 
+$cred = new-object System.Management.Automation.PSCredential -argumentlist arcadmin,$pwd
+
+New-PSDrive ARCADS -PSProvider SqlServer -Root "SQLSERVER:\SQL\myubuntuvm12.local.net,31437\DEFAULT\Databases" -Credential $cred
+
+PS C:\> $sqlPath = "SQLSERVER:\SQL\myubuntuvm12.local.net,31437\DEFAULT"
+PS C:\> cd $sqlpath
+PS SQLSERVER:\SQL\myubuntuvm12.local.net,31437\DEFAULT\Databases>
+
+====20230304----use invoke-Sqlcmd
+$backFileName = Get-Date -UFormat "%Y%m%d-%H%M"
+
+Invoke-Sqlcmd -Query "DROP CREDENTIAL [https://filecopyxyz222.blob.core.windows.net/ads-backup];" `
+ -ServerInstance "myubuntuvm12.local.net,31437" -Username "arcadmin" -Password '1qaz@WSX3edc$RFV'
+
+Invoke-Sqlcmd -Query "IF NOT EXISTS (SELECT * FROM sys.credentials WHERE name = 'https://filecopyxyz222.blob.core.windows.net/ads-backup') `
+CREATE CREDENTIAL [https://filecopyxyz222.blob.core.windows.net/ads-backup] `
+   WITH IDENTITY = 'SHARED ACCESS SIGNATURE', ` 
+   SECRET = 'sp=racwdl&st=2023-03-28T03:06:34Z&se=2023-06-28T11:06:34Z&spr=https&sv=2021-12-02&sr=c&sig=x%2BG%2B2REiF6b0ocxbVN71R8DB0fU21z8Ll%2FNHiOMEDIY%3D';" `
+-ServerInstance "myubuntuvm12.local.net,31437" -Username "arcadmin" -Password '1qaz@WSX3edc$RFV'
+
+Invoke-Sqlcmd -Query "BACKUP DATABASE AdventureWorks2019 `
+TO URL = 'https://filecopyxyz222.blob.core.windows.net/ads-backup/AdventureWorks2019-$backFileName.bak'with COPY_ONLY;" `
+-ServerInstance "myubuntuvm12.local.net,31437" -Username "arcadmin" -Password '1qaz@WSX3edc$RFV'
